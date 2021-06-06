@@ -1,0 +1,27 @@
+extends ../layouts/main-layout.pug
+
+block content
+    h1 Are you sure want to delete this product?
+    hr
+    .row
+        .col-md-4
+            img(src=`/img/${product.image}` alt=`${product.name}`).img-fluid
+
+        .col-md-8
+            h1 #{product.name}
+            
+            hr
+
+            a(href="").btn.btn-link.p-0.mb-3 #{category}
+            p #{product.description}    
+            p.text-primary #{product.price} 
+                i.fa.fa-try
+
+            hr
+
+            div.pt-3
+                form(action="/admin/deletePrd" method="POST").form-inline
+                    input(type="hidden" name="id" value=`${product.id}`)
+                    input(type="hidden" name="name" value=`${product.name}`)
+                    input(type="submit" value="Delete").btn.btn-primary.btn-sm
+                a(type="button" href="/admin/products").btn.btn-danger.btn-sm.ms-2 Cancel
