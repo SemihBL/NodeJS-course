@@ -1,4 +1,6 @@
-const connection = require('../utility/database');
+// DATABASE CONNECTION WITHOUT "Sequelize ORM" JUST MYSQL ***
+
+/* const connection = require('../utility/database');
 
 module.exports = class Category {
     constructor(name, description) {
@@ -33,4 +35,26 @@ module.exports = class Category {
     static deleteById(id) {
         return connection.execute('DELETE FROM categories WHERE id=?', [id])
     }
-}
+} */
+
+// DATABASE CONNECTION WITH "Sequelize ORM" ***
+
+const Sequelize = require('sequelize');
+const sequelize = require('../utility/database');
+
+const Category = sequelize.define('category', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true
+    },
+    name: Sequelize.STRING,
+    description: {
+        type: Sequelize.STRING,
+        allowNull: true
+    }
+});
+
+module.exports = Category
+

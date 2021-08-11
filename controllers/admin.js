@@ -2,11 +2,11 @@ const Category = require('../models/category');
 const Product = require('../models/product')
 
 module.exports.getPrds = (req, res, next) => {
-    Product.getAll()
+    Product.findAll()
         .then(products => {
             res.render('admin/products', {
                 title: "PrdList",
-                products: products[0],
+                products: products,
                 path: '/admin/products',
                 action: req.query.action,
                 name: req.query.name,
@@ -22,46 +22,72 @@ module.exports.getPrds = (req, res, next) => {
 }
 
 module.exports.GETaddPrd = (req, res, next) => {
-    Category.getAll()
-        .then((categories) => {
-            res.render('admin/addPrd', {
-                title: 'Add Product',
-                categories: categories[0],
-                path: '/admin/addPrd'
-            })
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-
-    // res.sendFile(path.join(__dirname, '../', 'views', 'addPrd.html'));
+    res.render('admin/addPrd', {
+        title: 'Add Product',
+        path: '/admin/addPrd'
+        // categories: categories[0],
+    });
 }
 
 module.exports.POSTaddPrd = (req, res, next) => {
-    const product = new Product()
-    product.name = req.body.name;
-    product.price = req.body.price;
-    product.image = req.body.image;
-    product.description = req.body.description;
-    product.categoryid = req.body.categoryid;
+    // const product = new Product()
+    const name = req.body.name;
+    const price = req.body.price;
+    const image = req.body.image;
+    const description = req.body.description;
+    // product.categoryid = req.body.categoryid;
 
+    /* CREATE METHOD */
+
+    Product.create({
+        name: name,
+        price: price,
+        image: image,
+        description: description
+    }).then(result => {
+        console.log(result);
+        res.redirect('/admin/products?action=add&name=' + product.name + '&id=' + product.id);
+    }).catch(err => {
+        console.log(err);
+    })
+
+    /* BUILD METHOD
+    const prd = Product.build({
+        name: name,
+        price: price,
+        image: image,
+        description: description
+    })
+
+    prd.save().then(result => {
+        console.log(result);
+        res.redirect('/admin/products?action=add&name=' + name + '&id=' + result.id);
+    }).catch(err => {
+        console.log(err);
+    })
+    */
+
+    // SQL CODES WITHOUT SEQUELIZE 
+
+    /*
     product.savePrd()
         .then(() => {
             res.redirect('/admin/products?action=add&name=' + product.name + '&id=' + product.id);
         }).catch((err) => {
             console.log(err);
-        });
+        }); 
+    */
 }
 
 module.exports.GETeditPrd = (req, res, next) => {
-    Product.getById(req.params.productid)
+    Product.findByPk(req.params.productid)
         .then((product) => {
-            Category.getAll()
+            Category.findAll()
                 .then((categories) => {
                     res.render('admin/editPrd', {
                         title: 'Add Product',
-                        product: product[0][0],
-                        categories: categories[0],
+                        product: product,
+                        categories: categories,
                         path: '/admin/editPrd'
                     });
                 })
@@ -95,7 +121,7 @@ module.exports.POSTeditPrd = (req, res, next) => {
 
 module.exports.GETdeletePrd = (req, res, next) => {
 
-    Product.getByName(req.params.productname)
+    Product.findByPk(req.params.productname)
         .then((product) => {
             Category.getById(product[0][0].categoryid).then((category) => {
                 res.render('admin/deletePrd', {

@@ -30,13 +30,13 @@ block content
             div.col-sm-10
                 textarea(type="text" name="description").form-control#description
 
-        div.form-group.row.pt-3
-            label(for="categoryid").col-sm-2.col-form-label Category
-            div.col-sm-10
-                select(name="categoryid").form-control#categoryid
-                    option(value="-1") Select Category
-                    each category in categories
-                        option(value=`${category.id}`) #{category.name}
+        //- div.form-group.row.pt-3
+        //-     label(for="categoryid").col-sm-2.col-form-label Category
+        //-     div.col-sm-10
+        //-         select(name="categoryid").form-control#categoryid
+        //-             option(value="-1") Select Category
+        //-             each category in categories
+        //-                 option(value=`${category.id}`) #{category.name}
 
         div.form-group.row
             div.col-md-10.offset-sm-2.pt-3

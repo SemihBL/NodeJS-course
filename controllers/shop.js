@@ -2,14 +2,14 @@ const Product = require('../models/product')
 const Category = require('../models/category')
 
 module.exports.getIndex = (req, res, next) => {
-    Product.getAll()
+    Product.findAll()
         .then(products => {
-            Category.getAll()
+            Category.findAll()
                 .then(categories => {
                     res.render('shop/index', {
                         title: "Shopping",
-                        products: products[0],
-                        categories: categories[0],
+                        products: products,
+                        categories: categories,
                         path: '/'
                     });
                 })
@@ -25,14 +25,16 @@ module.exports.getIndex = (req, res, next) => {
 }
 
 module.exports.getProducts = (req, res, next) => {
-    Product.getAll()
+    Product.findAll(
+        { attributes: ['id', 'name', 'price', 'image'] }
+    )
         .then(products => {
-            Category.getAll()
+            Category.findAll()
                 .then(categories => {
                     res.render('shop/products', {
                         title: "Products",
-                        products: products[0],
-                        categories: categories[0],
+                        products: products,
+                        categories: categories,
                         path: '/products'
                     })
                 })
@@ -47,9 +49,9 @@ module.exports.getProducts = (req, res, next) => {
 
 module.exports.getProductsByCategoryName = (req, res, next) => {
 
-    Product.getAll()
+    Product.findAll()
         .then(() => {
-            Category.getAll()
+            Category.findAll()
                 .then((categories) => {
                     const categoryname = req.params.categoryname
                     const category = Category.getByName(categoryname)
@@ -65,7 +67,6 @@ module.exports.getProductsByCategoryName = (req, res, next) => {
                             console.log(err);
                         });
 
-
                 })
                 .catch((err) => {
                     console.log(err);
@@ -80,25 +81,43 @@ module.exports.getProductsByCategoryName = (req, res, next) => {
 
 module.exports.getProduct = (req, res, next) => {
 
-    Product.getById(req.params.productid)
-        .then((product) => {
-            Category.getById(product[0][0].categoryid)
-                .then((category) => {
-                    res.render('shop/prdDetail', {
-                        title: product[0][0].name,
-                        product: product[0][0],
-                        path: '/products',
-                        category: category[0][0].name
-                    });
-                }).catch((err) => {
-                    console.log(err);
-
-                })
+    Product.findAll(
+        { attributes: ['id', 'name', 'price', 'image', 'description'] },
+        { where: { id: req.params.productid } }
+    )
+        .then(products => {
+            res.render('shop/prdDetail', {
+                title: products[0].name,
+                product: products[0],
+                path: '/products',
+                // category: category.name
+            });
         })
         .catch((err) => {
             console.log(err);
 
         });
+
+    // Product.findByPk(req.params.productid)
+    //     .then((product) => {
+    //         Category.findByPk(product.categoryid)
+    //             .then((category) => {
+    //                 console.log(category);
+    //                 res.render('shop/prdDetail', {
+    //                     title: product.name,
+    //                     product: product,
+    //                     path: '/products',
+    //                     // category: category.name
+    //                 });
+    //             }).catch((err) => {
+    //                 console.log(err);
+
+    //             })
+    //     })
+    //     .catch((err) => {
+    //         console.log(err);
+
+    //     });
 
 }
 

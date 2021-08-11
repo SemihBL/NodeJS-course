@@ -1,4 +1,6 @@
-const connection = require('../utility/database');
+// DATABASE CONNECTION WITHOUT "Sequelize ORM" JUST MYSQL ***
+
+/* const connection = require('../utility/database');
 
 module.exports = class Product {
     constructor(id, name, price, image, description, categoryid) {
@@ -40,4 +42,33 @@ module.exports = class Product {
         return connection.execute('DELETE FROM products WHERE id=?', [id]);
     }
 
-}
+} */
+
+// DATABASE CONNECTION WITH "Sequelize ORM" ***
+
+const Sequelize = require('sequelize');
+const sequelize = require('../utility/database');
+
+const Product = sequelize.define('product', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true
+    },
+    name: Sequelize.STRING,
+    price: {
+        type: Sequelize.DOUBLE,
+        allowNull: false
+    },
+    image: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    description: {
+        type: Sequelize.STRING,
+        allowNull: true
+    }
+});
+
+module.exports = Product
