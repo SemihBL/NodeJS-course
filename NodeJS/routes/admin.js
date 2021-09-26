@@ -13,7 +13,7 @@ router.get('/editPrd/:productid', adminController.GETeditPrd);
 
 router.post('/editPrd', adminController.POSTeditPrd);
 
-router.get('/deletePrd/:productname', adminController.GETdeletePrd);
+router.get('/deletePrd/:productid', adminController.GETdeletePrd);
 
 router.post('/deletePrd', adminController.POSTdeletePrd);
 

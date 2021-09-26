@@ -19,9 +19,19 @@ block content
                 input(type="text" name="name" value=`${product.name}`).form-control#name
 
         div.form-group.row.pt-3
+            label(for="price").col-sm-2.col-form-label Price
+            div.col-sm-10
+                input(type="text" name="price" value=`${product.price}`).form-control#price
+
+        div.form-group.row.pt-3
             label(for="image").col-sm-2.col-form-label Image
             div.col-sm-10
                 input(type="text" name="image" value=`${product.image}`).form-control#image
+
+        div.form-group.row.pt-3
+            label(for="description").col-sm-2.col-form-label Description
+            div.col-sm-10
+                textarea(type="text" name="description").form-control#description #{product.description}                      
 
         div.form-group.row.pt-3
             label(for="categoryid").col-sm-2.col-form-label Category
@@ -29,17 +39,8 @@ block content
                 select(name="categoryid").form-control#categoryid
                     option(value="-1") Select Category
                     each category in categories
-                        option(value=`${category.id}` selected=category.id===product.categoryid) #{category.name}
+                        option(value=`${category.id}` selected=category.id===product.categoryId) #{category.name}
 
-        div.form-group.row.pt-3
-            label(for="description").col-sm-2.col-form-label Description
-            div.col-sm-10
-                textarea(type="text" name="description").form-control#description #{product.description}
-
-        div.form-group.row.pt-3
-            label(for="price").col-sm-2.col-form-label Price
-            div.col-sm-10
-                input(type="text" name="price" value=`${product.price}`).form-control#price                      
 
         div.form-group.row
             div.col-md-10.offset-sm-2.pt-3

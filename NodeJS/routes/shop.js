@@ -9,9 +9,11 @@ router.get('/products', shopController.getProducts);
 
 router.get('/products/:productid', shopController.getProduct);
 
-router.get('/categories/:categoryname', shopController.getProductsByCategoryName)
+router.get('/categories/:categoryid', shopController.getProductsByCategoryId)
 
 router.get('/cart', shopController.getCart);
+
+router.post('/cart', shopController.postCart);
 
 router.get('/orders', shopController.getOrders);
 

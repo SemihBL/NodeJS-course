@@ -12,4 +12,7 @@ mixin createProduct(product)
             div.card-footer.text-center
 
                 a(href=`/products/${product.id}`).btn.btn-outline-primary.btn-sm Detail
-                a(href="#").btn.btn-outline-primary.btn-sm.ms-2 Add to Cart 
+
+                form(action='/cart' method='POST' style="display: inline")
+                    input(type='hidden' name='productId' value=`${product.id}`)   
+                    button(type="submit" name="quantity" value=1).btn.btn-outline-primary.btn-sm.ms-2 Add to Cart

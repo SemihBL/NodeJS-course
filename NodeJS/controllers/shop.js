@@ -1,5 +1,6 @@
 const Product = require('../models/product')
-const Category = require('../models/category')
+const Category = require('../models/category');
+const { use } = require('../routes/admin');
 
 module.exports.getIndex = (req, res, next) => {
     Product.findAll(
@@ -51,16 +52,20 @@ module.exports.getProducts = (req, res, next) => {
 
 module.exports.getProduct = (req, res, next) => {
 
-    Product.findAll(
-        { attributes: ['id', 'name', 'price', 'image', 'description'] },
-        { where: { id: req.params.productid } }
+    Product.findAll({
+        attributes: ['id', 'name', 'price', 'image', 'description', 'categoryId'],
+        where: { id: req.params.productid }
+    }
     )
         .then(products => {
-            res.render('shop/prdDetail', {
-                title: products[0].name,
-                product: products[0],
-                path: '/products',
-                // category: category.name
+            Category.findByPk(products[0].categoryId).then(category => {
+                res.render('shop/prdDetail', {
+                    title: products[0].name,
+                    product: products[0],
+                    path: '/products',
+                    category: category
+
+                })
             });
         })
         .catch((err) => {
@@ -91,41 +96,110 @@ module.exports.getProduct = (req, res, next) => {
 
 }
 
-module.exports.getProductsByCategoryName = (req, res, next) => {
+module.exports.getProductsByCategoryId = (req, res, next) => {
+    const categoryid = req.params.categoryid
+    const model = [];
 
-    Product.findAll()
-        .then(() => {
-            Category.findAll()
-                .then((categories) => {
-                    const categoryname = req.params.categoryname
-                    const category = Category.getByName(categoryname)
-                        .then((category) => {
-                            res.render('shop/products', {
-                                title: "Products",
-                                products: Product.getProductsByCategoryId(category[0][0].id),
-                                categories: categories[0],
-                                path: `/categories/${category[0][0].id}`
-                            });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                        });
+    Category.findAll()
+        .then(categories => {
+            model.categories = categories;
+            const category = categories.find(i => i.id == categoryid);
 
+            Product.findAll({ where: { categoryId: req.params.categoryid } },
+                { attributes: ["id", "name", "price", "image", "description", "categoryId"] })
+                .then(products => {
+                    console.log(products)
+                    res.render('shop/products', {
+                        title: 'Products',
+                        products: products,
+                        categories: model.categories,
+                        // selectedCategory: categoryid,
+                        path: `/categories/${categoryid}`
+
+                    });
                 })
-                .catch((err) => {
-                    console.log(err);
-                });
         })
         .catch((err) => {
             console.log(err);
-        });
+        })
 
 }
 
 module.exports.getCart = (req, res, next) => {
-    res.render('shop/cart', { title: "Cart", path: '/cart' });
+    req.user.getCart()
+        .then(cart => {
+            return cart.getProducts()
+                .then(products => {
+                    res.render('shop/cart', {
+                        title: "Cart",
+                        path: '/cart',
+                        products: products
+                    });
+
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
+        }).catch(err => {
+            console.log(err)
+        });
+
+}
+
+module.exports.postCart = (req, res, next) => {
+
+    const productId = req.body.productId;
+    let quantity = Number(req.body.quantity);
+    let userCart;
+
+    console.log(quantity);
+
+    req.user.getCart()
+        .then(cart => {
+            userCart = cart;
+            return cart.getProducts({ where: { id: productId } });
+        })
+        .then(products => {
+            let product;
+            if (products.length > 0)
+                product = products[0];
+
+            if (product) {
+                quantity += product.cartItem.quantity;
+                return product;
+            }
+            return Product.findByPk(productId)
+        })
+        .then(product => {
+            userCart.addProduct(product, {
+                through: {
+                    quantity: quantity
+                }
+            })
+        })
+        .then(() => {
+            res.redirect('/cart');
+        })
+        .catch(err => {
+            console.log(err)
+        });
 }
 
 module.exports.getOrders = (req, res, next) => {
     res.render('shop/orders', { title: "Orders", path: '/orders' });
 }
+
+
+// return cart.getProducts()
+// .then(products => {
+//     res.render('shop/cart', {
+//         title: "Cart",
+//         path: '/cart',
+//         products: products
+//     });
+
+// })
+// .catch(err => {
+//     console.log(err);
+// }); 
